@@ -1,81 +1,40 @@
-# 📄 Document Management Service
+# Document Management Service
 
-A simple FastAPI backend to upload, list, and delete documents.
+## My Approach
 
----
+When I started this project, my goal was to keep the code clean, simple, and easy to understand.
 
-## 🛠️ Setup Instructions
+I broke the problem into three clear API endpoints - Upload, List, and Delete.
 
-### 1. Clone the repo
-```bash
-git clone <your-repo-url>
-cd document_service
-```
+### How I Structured the Code
 
-### 2. Create virtual environment
-```bash
-python -m venv venv
-source venv/bin/activate        # On Windows: venv\Scripts\activate
-```
+Instead of writing everything in one file, I separated code into focused modules:
+- database.py handles SQLite connection setup
+- models.py defines the documents table structure
+- schemas.py controls API response shape and hides file_path for security
+- main.py contains all 3 APIs with validation and error handling
+- requirements.txt lists all packages needed to run the project
 
-### 3. Install dependencies
-```bash
+### File Upload Flow
+1. Validate file extension - only PDF DOCX TXT allowed
+2. Check file size - maximum 10 MB
+3. Save file to uploaded_files folder
+4. Save metadata to SQLite database
+5. Return response with id filename size uploaded_at
+
+### Error Handling
+- 400 for unsupported file type or size exceeded
+- 404 for document not found
+- 500 for unexpected server error
+
+### Why This Structure
+I followed Separation of Concerns - each file has one clear responsibility.
+This makes code easier to read test and maintain.
+
+## Tech Stack
+Python 3.10+ FastAPI SQLite SQLAlchemy Pydantic Uvicorn
+
+## Setup
 pip install -r requirements.txt
-```
-
-### 4. Run the server
-```bash
 uvicorn main:app --reload
-```
-
-Server will start at: **http://127.0.0.1:8000**
-
----
-
-## 📬 API Usage Examples
-
-### ✅ Upload a Document
-```bash
-curl -X POST http://127.0.0.1:8000/documents \
-  -F "file=@resume.pdf"
-```
-
-**Response:**
-```json
-{
-  "id": 1,
-  "filename": "resume.pdf",
-  "size": 125634,
-  "uploaded_at": "2026-06-11T10:00:00Z"
-}
-```
-
----
-
-### 📋 List All Documents
-```bash
-curl http://127.0.0.1:8000/documents
-```
-
----
-
-### ❌ Delete a Document
-```bash
-curl -X DELETE http://127.0.0.1:8000/documents/1
-```
-
-**Response:**
-```json
-{
-  "message": "Document deleted successfully"
-}
-```
-
----
-
-## 📌 Notes
-- Supported file types: `.pdf`, `.docx`, `.txt`
-- Max file size: **10 MB**
-- Files are stored in the `uploaded_files/` folder
-- Database: SQLite (`documents.db` auto-created)
-- Interactive API docs available at: **http://127.0.0.1:8000/docs**
+Open http://127.0.0.1:8000/docs
